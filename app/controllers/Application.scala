@@ -17,23 +17,18 @@ object Application extends Controller {
 
   def contest = Action { request =>
 
-    /*
-    val parsed = request.body.asJson.map { jsValue =>
-      val petId1 = (jsValue \ "pet-id-1")
-      val petId2 = (jsValue \ "pet-id-2")
-      val contestType = (jsValue \ "contest-type")
-      (petId1, petId2, contestType)
-    }*/
 
-  val contestRequest: Option[JsResult[ContestRequest]] = request.body.asJson.map { jsValue : JsValue =>
-      Json.fromJson[ContestRequest](jsValue)
-  }
+    val result: Option[JsResult[ContestRequest]] = request.body.asJson
+      .map { jsValue: JsValue =>
+        Json.fromJson[ContestRequest](jsValue)
+      }
 
+    println(result)
 
-
-    println(contestRequest)
-
-    Ok(views.html.main())
+    result match {
+      case Some(success: JsSuccess[ContestRequest]) => Ok("ok\n")
+      case _ => BadRequest("br\n")
+    }
   }
 
 }
