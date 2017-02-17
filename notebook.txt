@@ -1,1 +1,71 @@
-curl --header "X-Pets-Token: " https://wunder-pet-api-staging.herokuapp.com/pets
+curl --header "X-Pets-Token: $BPKEY" https://wunder-pet-api-staging.herokuapp.com/pets
+
+# Strawman API for Battle Pets Arena
+
+I just began working on Battle Pets Arena this evening and I have developed
+a strawman API. It is somewhat ill defined; I will firm it up later.
+I have attempted to follow the style of the Pet API 
+https://github.com/wunderteam/battle-pets-api
+
+As I firm up the API, I can run it by you again. Does that sound good
+to you?
+
+Would you mind taking a look at it, and letting me know your thoughts?
+Is there any other functionality you would like to see?
+Do you have any questions? Suggestions?
+I have very little experience with REST, let alone defining REST APIs,
+so I appreciate any feedback you might have. 
+
+## The API
+
+### Endpoints
+
+All endpoints require an API key to access.
+This key is passed via the X-Pets-Token HTTP header.
+
+### Create a contest
+
+POST /contest
+
+Example JSON payload:
+
+{
+    "pet-id-1": "b7c451b0-c6f0-84ab-cd79-094ff432cab2",
+    "pet-id-2": "75840baf-f0c6-a8c4-32d3-983a89b7cd01",
+    "contest-type": "battle-of-wits"
+}
+
+On success, returns the contest-id as a JSON string.
+
+Error responses TBD.
+
+### Retrieve status
+
+GET /contest/status/:contest-id
+
+On success, returns a JSON object like:
+
+{
+    "code": 1
+    "message": "The contest has completed."
+}
+
+Codes, messages, and error responses TBD.
+
+### Retrieve result
+
+GET /contest/result/:contest-id
+
+On success, returns a JSON object like:
+
+{
+    "first-place": "b7c451b0-c6f0-84ab-cd79-094ff432cab2",
+    "second-place": "75840baf-f0c6-a8c4-32d3-983a89b7cd01",
+    "summary": "In English, the summary describes the most exciting events
+               that occured during the contest."
+}
+
+The "summary" key is optional, since some contests might be completely boring.
+
+
+
