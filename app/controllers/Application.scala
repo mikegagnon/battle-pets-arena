@@ -17,7 +17,7 @@ object Application extends Controller {
 
   def contest = Action { request =>
 
-
+    // Parse the request
     val result: Option[JsResult[ContestRequest]] = request.body.asJson
       .map { jsValue: JsValue =>
         Json.fromJson[ContestRequest](jsValue)
