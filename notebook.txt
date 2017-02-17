@@ -1,4 +1,5 @@
 curl --header "X-Pets-Token: $BPKEY" https://wunder-pet-api-staging.herokuapp.com/pets
+curl -H "Content-Type: application/json" -X POST -d '{"foo": "abc"}' http://localhost:9000/contest
 
 # Strawman API for Battle Pets Arena
 
