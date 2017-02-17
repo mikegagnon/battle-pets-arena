@@ -68,4 +68,7 @@ On success, returns a JSON object like:
 The "summary" key is optional, since some contests might be completely boring.
 
 
+## API v2 ideas
 
+- Combine status and result into one
+- In memory only, or database needed?
