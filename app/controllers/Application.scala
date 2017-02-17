@@ -18,8 +18,8 @@ object Application extends Controller {
   def contest = Action { request =>
 
     // Parse the request
-    val result: Option[JsResult[ContestRequest]] = request.body.asJson
-      .map { jsValue: JsValue =>
+    val result: Option[JsResult[ContestRequest]] =
+      request.body.asJson.map { jsValue: JsValue =>
         Json.fromJson[ContestRequest](jsValue)
       }
 
@@ -27,7 +27,8 @@ object Application extends Controller {
 
     result match {
       case Some(success: JsSuccess[ContestRequest]) => Ok("ok\n")
-      case _ => BadRequest("br\n")
+      case Some(error: JsError) => BadRequest("Errors: " + JsError.toJson(error).toString())
+      case None => BadRequest("br\n")
     }
   }
 
