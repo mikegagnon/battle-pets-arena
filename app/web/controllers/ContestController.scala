@@ -46,6 +46,7 @@ class NewContestActor extends Actor {
           http.singleRequest(httpRequest)
         }
 
+      // Combine the two futures into one
       val response: Future[(HttpResponse, HttpResponse)] = for {
         httpResponse1 <- future1
         httpResponse2 <- future2
