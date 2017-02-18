@@ -7,7 +7,6 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 scalaVersion := "2.11.8"
 
 // TODO: minimize library dependencies
-
 libraryDependencies += jdbc
 
 libraryDependencies += cache
@@ -16,6 +15,7 @@ libraryDependencies += ws
 
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test
 
+libraryDependencies += "com.typesafe.akka" % "akka-actor_2.11" % "2.4.17"
 
 // TODO: comment
 routesGenerator := InjectedRoutesGenerator
