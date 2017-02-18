@@ -1,17 +1,40 @@
 package controllers
 
+import akka.actor.Actor
+import akka.actor.ActorSystem
+import akka.actor.Props
+import akka.event.Logging
 import javax.inject._
 import play.api._
-import play.api.mvc._
 import play.api.libs.json._
+import play.api.mvc._
 
 // TODO: where should this case class go
 case class ContestRequest(petId1: String, petId2: String, contestType: String)
 
+// TODO: comment
+class NewContestActor extends Actor {
+  val log = Logging(context.system, this)
+
+  def receive = {
+    case ContestRequest(petId1, petId2, contestType) =>
+      log.info(s"received newContest: $petId1, $petId2, $contestType")
+    case _ => log.info("received unknown message")
+  }
+}
+
 @Singleton
 class Application @Inject() extends Controller {
 
-  def launchContest(request: ContestRequest): Result = {
+  val system = ActorSystem("BattlePetsArenaSystem")
+
+  // TODO: rm?
+  def launchContest(contestRequest: ContestRequest): Result = {
+
+    val newContestActor = system.actorOf(Props[NewContestActor])
+
+    newContestActor ! contestRequest
+
     Ok("ok\n")
   }
 
