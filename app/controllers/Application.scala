@@ -21,10 +21,7 @@ class NewContestActor extends Actor {
       log.info(s"received newContest: $petId1, $petId2, $contestType")
       context.stop(self)
     }
-    case _ => {
-      log.error("received unknown message")
-      throw new IllegalArgumentException("NewContestActor received unknown message")
-    }
+    case _ => throw new IllegalArgumentException("NewContestActor received unknown message")
   }
 }
 
