@@ -28,7 +28,7 @@ class Application @Inject() extends Controller {
 
     result match {
       case Some(success: JsSuccess[ContestRequest]) => Ok("ok\n")
-      case Some(error: JsError) => BadRequest("Errors: " + JsError.toJson(error).toString())
+      case Some(error: JsError) => BadRequest(""""Your request is malformed"""")
       case None => BadRequest("br\n")
     }
   }
