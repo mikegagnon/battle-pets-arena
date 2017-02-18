@@ -60,7 +60,7 @@ class ContestController @Inject() extends Controller {
 
     newContestActor ! contestRequest
 
-    Ok("ok\n")
+    Created("ok\n")
   }
 
   // Note: The reason we specify parse.tolerantJson is to avoid Play automatically handling
