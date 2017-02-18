@@ -7,7 +7,6 @@ import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers._
-
 import akka.stream.ActorMaterializer
 import akka.stream.ActorMaterializerSettings
 import javax.inject._
@@ -15,6 +14,7 @@ import play.api._
 import play.api.libs.json._
 import play.api.mvc._
 import scala.concurrent._
+import scala.util.{Success, Failure}
 import ExecutionContext.Implicits.global
 
 // TODO: where should this case class go
@@ -33,13 +33,27 @@ class NewContestActor extends Actor {
     case ContestRequest(petId1, petId2, contestType) => {
       log.info(s"received newContest: $petId1, $petId2, $contestType")
 
-      val httpRequest = HttpRequest(uri = "https://wunder-pet-api-staging.herokuapp.com/pets")
-        .withHeaders(RawHeader("X-Pets-Token", ""))
+      val List(future1, future2) = List(petId1, petId2)
+        .map { petId =>
 
-      val fut = http.singleRequest(httpRequest)
+          // TODO: take uri as a configuration element
+          val uri = s"https://wunder-pet-api-staging.herokuapp.com/pets/$petId"
 
-      for (result <- fut) {
-        log.info(result.toString)
+          val apiKey = ""
+
+          val httpRequest = HttpRequest(uri = uri).withHeaders(RawHeader("X-Pets-Token", apiKey))
+
+          http.singleRequest(httpRequest)
+        }
+
+      val response: Future[(HttpResponse, HttpResponse)] = for {
+        httpResponse1 <- future1
+        httpResponse2 <- future2
+      } yield (httpResponse1, httpResponse2)
+
+      response.onComplete {
+        case Success((resp1, resp2)) => println(resp1, resp2)
+        case Failure(t) => println(t)
       }
 
       context.stop(self)
