@@ -17,9 +17,14 @@ class NewContestActor extends Actor {
   val log = Logging(context.system, this)
 
   def receive = {
-    case ContestRequest(petId1, petId2, contestType) =>
+    case ContestRequest(petId1, petId2, contestType) => {
       log.info(s"received newContest: $petId1, $petId2, $contestType")
-    case _ => log.info("received unknown message")
+      context.stop(self)
+    }
+    case _ => {
+      log.error("received unknown message")
+      throw new IllegalArgumentException("NewContestActor received unknown message")
+    }
   }
 }
 
