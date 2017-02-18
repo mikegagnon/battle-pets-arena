@@ -75,4 +75,5 @@ The "summary" key is optional, since some contests might be completely boring.
 - In memory only, or database needed?
 - pet-id-1 to petId1
 - return futures?
+- logging
 
