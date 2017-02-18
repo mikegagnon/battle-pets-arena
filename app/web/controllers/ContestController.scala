@@ -1,4 +1,4 @@
-package controllers
+package me.michaelgagnon.pets.web.controllers
 
 import akka.actor.Actor
 import akka.actor.ActorSystem
@@ -49,7 +49,7 @@ class NewContestActor extends Actor {
 }
 
 @Singleton
-class Application @Inject() extends Controller {
+class ContestController @Inject() extends Controller {
 
   val system = ActorSystem("BattlePetsArenaSystem")
 
