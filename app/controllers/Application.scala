@@ -6,6 +6,8 @@ import akka.actor.Props
 import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
+import akka.http.scaladsl.model.headers._
+
 import akka.stream.ActorMaterializer
 import akka.stream.ActorMaterializerSettings
 import javax.inject._
@@ -31,7 +33,10 @@ class NewContestActor extends Actor {
     case ContestRequest(petId1, petId2, contestType) => {
       log.info(s"received newContest: $petId1, $petId2, $contestType")
 
-      val fut = http.singleRequest(HttpRequest(uri = "http://akka.io"))
+      val httpRequest = HttpRequest(uri = "https://wunder-pet-api-staging.herokuapp.com/pets")
+        .withHeaders(RawHeader("X-Pets-Token", ""))
+
+      val fut = http.singleRequest(httpRequest)
 
       for (result <- fut) {
         log.info(result.toString)
