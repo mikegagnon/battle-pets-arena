@@ -14,56 +14,23 @@ case class ContestRequest(petId1: String, petId2: String, contestType: String)
 @Singleton
 class Application @Inject() extends Controller {
 
-  def contest = Action { request =>
+  // Note: The reason we specify parse.tolerantJson is to avoid Play automatically handling
+  // the error case where application/json is missing from the header. We want to avoid this case
+  // because Play returns an HTML error message, which is inconsistent with our JSON error messages
+  def contest = Action(parse.tolerantJson) { request =>
 
-    implicit val contestRequestReads = Json.reads[ContestRequest]
+      implicit val contestRequestReads = Json.reads[ContestRequest]
 
-    // Parse the request
-    val result: Option[JsResult[ContestRequest]] =
-      request.body.asJson.map { jsValue: JsValue =>
-        Json.fromJson[ContestRequest](jsValue)
+      // parse the request
+      val result: JsResult[ContestRequest] = Json.fromJson[ContestRequest](request.body)
+
+      println(result)
+
+      result match {
+        case success: JsSuccess[ContestRequest] => Ok("ok\n")
+        case error: JsError => BadRequest("\"Your request is malformed\"\n")
       }
 
-    println(result)
-
-    result match {
-      case Some(success: JsSuccess[ContestRequest]) => Ok("ok\n")
-      case Some(error: JsError) => BadRequest("\"Your request is malformed\"\n")
-      case None => BadRequest("br\n")
-    }
   }
 
 }
-
-
-
-
-/*object Application extends Controller {
-
-  implicit val contestRequestReads = Json.reads[ContestRequest]
-
-  // TODO: rm along with view
-  def index = Action {
-    Ok(views.html.main())
-  }
-
-  def contest = Action { request =>
-
-    // Parse the request
-    val result: Option[JsResult[ContestRequest]] =
-      request.body.asJson.map { jsValue: JsValue =>
-        Json.fromJson[ContestRequest](jsValue)
-      }
-
-    println(result)
-
-    result match {
-      case Some(success: JsSuccess[ContestRequest]) => Ok("ok\n")
-      case Some(error: JsError) => BadRequest("Errors: " + JsError.toJson(error).toString())
-      case None => BadRequest("br\n")
-    }
-  }
-
-}
-*/
-
