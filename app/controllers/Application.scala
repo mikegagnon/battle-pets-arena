@@ -8,11 +8,12 @@ import play.api.libs.json._
 // TODO: where should this case class go
 case class ContestRequest(petId1: String, petId2: String, contestType: String)
 
-
-
-
 @Singleton
 class Application @Inject() extends Controller {
+
+  def launchContest(request: ContestRequest): Result = {
+    Ok("ok\n")
+  }
 
   // Note: The reason we specify parse.tolerantJson is to avoid Play automatically handling
   // the error case where application/json is missing from the header. We want to avoid this case
@@ -27,10 +28,9 @@ class Application @Inject() extends Controller {
       println(result)
 
       result match {
-        case success: JsSuccess[ContestRequest] => Ok("ok\n")
+        case success: JsSuccess[ContestRequest] => launchContest(success.value)
         case error: JsError => BadRequest("\"Your request is malformed\"\n")
       }
-
   }
 
 }
