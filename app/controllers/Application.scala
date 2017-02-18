@@ -4,10 +4,16 @@ import akka.actor.Actor
 import akka.actor.ActorSystem
 import akka.actor.Props
 import akka.event.Logging
+import akka.http.scaladsl.Http
+import akka.http.scaladsl.model._
+import akka.stream.ActorMaterializer
+import akka.stream.ActorMaterializerSettings
 import javax.inject._
 import play.api._
 import play.api.libs.json._
 import play.api.mvc._
+import scala.concurrent._
+import ExecutionContext.Implicits.global
 
 // TODO: where should this case class go
 case class ContestRequest(petId1: String, petId2: String, contestType: String)
@@ -16,9 +22,21 @@ case class ContestRequest(petId1: String, petId2: String, contestType: String)
 class NewContestActor extends Actor {
   val log = Logging(context.system, this)
 
+  final implicit val materializer: ActorMaterializer =
+    ActorMaterializer(ActorMaterializerSettings(context.system))
+
+  val http = Http(context.system)
+
   def receive = {
     case ContestRequest(petId1, petId2, contestType) => {
       log.info(s"received newContest: $petId1, $petId2, $contestType")
+
+      val fut = http.singleRequest(HttpRequest(uri = "http://akka.io"))
+
+      for (result <- fut) {
+        log.info(result.toString)
+      }
+
       context.stop(self)
     }
     case _ => throw new IllegalArgumentException("NewContestActor received unknown message")
