@@ -9,6 +9,7 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers._
 import akka.stream.ActorMaterializer
 import akka.stream.ActorMaterializerSettings
+import java.util.UUID
 import javax.inject._
 import play.api._
 import play.api.libs.json._
@@ -17,8 +18,12 @@ import scala.concurrent._
 import scala.util.{Success, Failure}
 import ExecutionContext.Implicits.global
 
+object GetContestId
+
 // TODO: where should this case class go
 case class ContestRequest(petId1: String, petId2: String, contestType: String)
+
+case class ContestWithId(contest: ContestRequest, contestId: UUID)
 
 // TODO: comment
 class NewContestActor extends Actor {
@@ -30,8 +35,8 @@ class NewContestActor extends Actor {
   val http = Http(context.system)
 
   def receive = {
-    case ContestRequest(petId1, petId2, contestType) => {
-      log.info(s"received newContest: $petId1, $petId2, $contestType")
+    case ContestWithId(ContestRequest(petId1, petId2, contestType), contestId) => {
+      log.info(s"received newContest: $petId1, $petId2, $contestType, $contestId")
 
       val List(future1, future2) = List(petId1, petId2)
         .map { petId =>
@@ -71,11 +76,15 @@ class ContestController @Inject() extends Controller {
   // TODO: rm?
   def launchContest(contestRequest: ContestRequest): Result = {
 
+    val contestId = UUID.randomUUID()
+
+    val contestWithId = ContestWithId(contestRequest, contestId)
+
     val newContestActor = system.actorOf(Props[NewContestActor])
 
-    newContestActor ! contestRequest
+    newContestActor ! contestWithId
 
-    Created("ok\n")
+    Created(contestId.toString + "\n")
   }
 
   // Note: The reason we specify parse.tolerantJson is to avoid Play automatically handling
