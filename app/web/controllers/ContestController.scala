@@ -29,6 +29,12 @@ case class ContestWithId(contest: ContestRequest, contestId: UUID)
 
 case class ContestResult(contestId: UUID, firstPlacePetName: String, secondPlacePetName: String, summary: String)
 
+case class InitContestResult(contestId: UUID)
+
+case class StoreContestResult(contestResult: ContestResult)
+
+case class GetContestResult(contestId: UUID)
+
 case class ContestFailure(message: String)
 
 class DatabaseActor extends Actor {
@@ -42,13 +48,35 @@ class DatabaseActor extends Actor {
 
   def receive = {
 
+    case InitContestResult(contestId: UUID) => {
+      if (contests.contains(contestId)) {
+        throw new IllegalArgumentException("Cannot InitContestResult because db already has " +
+          contestId.toString)
+      }
+
+      contests(contestId) = Right(None)
+
+      log.info("InitContestResult(" + contestId.toString +")")
+    }
+
     // store the result of a contest
-    case ContestResult(contestId, firstPlacePetName, secondPlacePetName, summary) => {
-      println(contestId.toString, firstPlacePetName, secondPlacePetName, summary)
+    // TODO: document/enforce preconditions
+    case StoreContestResult(contestResult) => {
+
+      contests(contestResult.contestId) = Right(Some(contestResult))
+
+      log.info(contestResult.contestId.toString,
+        contestResult.firstPlacePetName,
+        contestResult.secondPlacePetName,
+        contestResult.summary)
     }
 
     // retrieve the result of a contest
-    case contestId: UUID => {
+    case GetContestResult(contestId: UUID) => {
+
+      // TODO. Also note, contestId might not exist in db, in which case we should reply with
+      // ContestFailure
+
       log.info(contestId.toString)
     }
   }
@@ -57,6 +85,7 @@ class DatabaseActor extends Actor {
 
 // TODO: comment
 class NewContestActor extends Actor {
+
   val log = Logging(context.system, this)
 
   final implicit val materializer: ActorMaterializer =
@@ -70,6 +99,7 @@ class NewContestActor extends Actor {
 
       context.actorOf(Props[DatabaseActor], "database") ! contestId
 
+      // Generate futures for requesting pet data from the Pet API
       val List(future1, future2) = List(petId1, petId2)
         .map { petId =>
 
