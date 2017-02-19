@@ -14,6 +14,7 @@ import javax.inject._
 import play.api._
 import play.api.libs.json._
 import play.api.mvc._
+import scala.collection.mutable.{Map => MutableMap}
 import scala.concurrent._
 import scala.util.{Success, Failure}
 import ExecutionContext.Implicits.global
@@ -21,9 +22,38 @@ import ExecutionContext.Implicits.global
 object GetContestId
 
 // TODO: where should this case class go
+// TODO: organize
 case class ContestRequest(petId1: String, petId2: String, contestType: String)
 
 case class ContestWithId(contest: ContestRequest, contestId: UUID)
+
+case class ContestResult(contestId: UUID, firstPlacePetName: String, secondPlacePetName: String, summary: String)
+
+case class ContestFailure(message: String)
+
+class DatabaseActor extends Actor {
+
+  val log = Logging(context.system, this)
+
+  // contests(contestId) is left implies the contest failed (e.g. if could not find petId)
+  // contests(contestId) is right None implies contest is in process
+  // contests(contestId) is right Some contains contest result
+  var contests = MutableMap[UUID, Either[ContestFailure, Option[ContestResult]]]()
+
+  def receive = {
+
+    // store the result of a contest
+    case ContestResult(contestId, firstPlacePetName, secondPlacePetName, summary) => {
+      println(contestId.toString, firstPlacePetName, secondPlacePetName, summary)
+    }
+
+    // retrieve the result of a contest
+    case contestId: UUID => {
+      log.info(contestId.toString)
+    }
+  }
+
+}
 
 // TODO: comment
 class NewContestActor extends Actor {
@@ -37,6 +67,8 @@ class NewContestActor extends Actor {
   def receive = {
     case ContestWithId(ContestRequest(petId1, petId2, contestType), contestId) => {
       log.info(s"received newContest: $petId1, $petId2, $contestType, $contestId")
+
+      context.actorOf(Props[DatabaseActor], "database") ! contestId
 
       val List(future1, future2) = List(petId1, petId2)
         .map { petId =>
@@ -72,6 +104,8 @@ class NewContestActor extends Actor {
 class ContestController @Inject() extends Controller {
 
   val system = ActorSystem("BattlePetsArenaSystem")
+
+  val databaseActor = system.actorOf(Props[DatabaseActor], "database")
 
   // TODO: rm?
   def launchContest(contestRequest: ContestRequest): Result = {
