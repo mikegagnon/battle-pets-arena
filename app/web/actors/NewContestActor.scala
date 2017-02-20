@@ -11,6 +11,7 @@ import akka.http.scaladsl.model.headers._
 import akka.stream.ActorMaterializer
 import akka.stream.ActorMaterializerSettings
 import java.util.UUID
+import play.api.Configuration
 import scala.collection.mutable.{Map => MutableMap}
 import scala.concurrent._
 import scala.util.{Success, Failure}
@@ -21,9 +22,12 @@ import me.michaelgagnon.pets.web.controllers.ContestRequest
 // TODO: own file
 // TODO: comment
 //class NewContestActor()(implicit ec: ExecutionContext) extends Actor {
-class NewContestActor()(implicit ec: ExecutionContext) extends Actor {
+class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) extends Actor {
 
   val log = Logging(context.system, this)
+
+  val petApiToken = config.getString("pet.api.token").get
+  val petApiHost = config.getString("pet.api.host").get
 
   final implicit val materializer: ActorMaterializer =
     ActorMaterializer(ActorMaterializerSettings(context.system))
@@ -40,12 +44,10 @@ class NewContestActor()(implicit ec: ExecutionContext) extends Actor {
       val List(future1, future2) = List(petId1, petId2)
         .map { petId =>
 
-          // TODO: take uri as a configuration element
-          val uri = s"https://wunder-pet-api-staging.herokuapp.com/pets/$petId"
+          val uri = s"$petApiHost/pets/$petId"
 
-          val apiKey = ""
-
-          val httpRequest = HttpRequest(uri = uri).withHeaders(RawHeader("X-Pets-Token", apiKey))
+          val httpRequest = HttpRequest(uri = uri)
+            .withHeaders(RawHeader("X-Pets-Token", petApiToken))
 
           http.singleRequest(httpRequest)
         }

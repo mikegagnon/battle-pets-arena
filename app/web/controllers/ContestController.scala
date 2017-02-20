@@ -31,7 +31,7 @@ case class ContestRequest(petId1: String, petId2: String, contestType: String)
 
 
 @Singleton
-class ContestController @Inject() extends Controller {
+class ContestController @Inject()(config: Configuration) extends Controller {
 
 /*  val system = ActorSystem("BattlePetsArenaSystem")
 
@@ -59,7 +59,7 @@ class ContestController @Inject() extends Controller {
 
           val contestWithId = ContestWithId(contestRequest, contestId)
 
-          val newContestActor = Actors.system.actorOf(Props(new NewContestActor()))
+          val newContestActor = Actors.system.actorOf(Props(new NewContestActor(config)))
 
           newContestActor ! contestWithId
 
