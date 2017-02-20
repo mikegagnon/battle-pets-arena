@@ -34,8 +34,17 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
 
   val http = Http(context.system)
 
+
   def receive = {
-    case ContestWithId(ContestRequest(petId1, petId2, contestType), contestId) => {
+    case contestWithId: ContestWithId => handleNewContest(contestWithId)
+    case _ => throw new IllegalArgumentException("NewContestActor received unknown message")
+  }
+
+
+  def handleNewContest(contestWithId: ContestWithId) = {
+      
+      val ContestWithId(ContestRequest(petId1, petId2, contestType), contestId) = contestWithId
+
       log.info(s"received newContest: $petId1, $petId2, $contestType, $contestId")
 
       context.actorOf(Props[DatabaseActor], "database") ! contestId
@@ -64,7 +73,6 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
       }
 
       context.stop(self)
-    }
-    case _ => throw new IllegalArgumentException("NewContestActor received unknown message")
   }
+
 }
