@@ -58,48 +58,11 @@ class DatabaseActor extends Actor {
 
   val log = Logging(context.system, this)
 
-  // contests(contestId) is left implies the contest failed (e.g. if could not find petId)
-  // contests(contestId) is right None implies contest is in process
-  // contests(contestId) is right Some contains contest result
   var contests = MutableMap[UUID, ContestStatus]()
 
   def receive = {
     case status: ContestStatus => contests(status.uuid) = status
     case _ => throw new IllegalArgumentException("DatabaseActor received unknown message")
-
-    /*case MessageInitContest(contestId: UUID) => {
-      if (contests.contains(contestId)) {
-        throw new IllegalArgumentException("Cannot InitContestResult because db already has " +
-          contestId.toString)
-      }
-
-      contests(contestId) = Right(None)
-
-      log.info("InitContestResult(" + contestId.toString +")")
-    }
-
-    // store the result of a contest
-    // TODO: document/enforce preconditions
-    case StoreContestResult(contestResult) => {
-
-      contests(contestResult.contestId) = contestResult)
-
-      log.info(contestResult.contestId.toString,
-        contestResult.firstPlacePetName,
-        contestResult.secondPlacePetName,
-        contestResult.summary)
-    }
-
-    // retrieve the result of a contest
-    case GetContestResult(contestId: UUID) => {
-
-      // TODO. Also note, contestId might not exist in db, in which case we should reply with
-      // ContestFailure
-
-      log.info(contestId.toString)
-    }
-    */
-
   }
 
 }
