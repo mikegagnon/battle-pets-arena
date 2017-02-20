@@ -20,12 +20,9 @@ import me.michaelgagnon.pets.web.controllers.ContestRequest
 // TODO: relocate all these definitions?
 // TODO: rename, relocate?
 case class ContestFailure(message: String)
-// TODO: rename, relocate?
-case class ContestResult(contestId: UUID, firstPlacePetName: String, secondPlacePetName: String, summary: String)
 // TODO: rename? relocate? encapsulate in DatabaseMessage object?
 case class StoreContestResult(contestResult: ContestResult)
 case class GetContestResult(contestId: UUID)
-case class InitContestResult(contestId: UUID)
 // changename to ContestRequestWithId
 case class ContestWithId(contest: ContestRequest, contestId: UUID)
 

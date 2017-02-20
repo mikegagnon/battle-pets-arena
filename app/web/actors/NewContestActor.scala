@@ -48,7 +48,7 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
       log.info(s"received newContest: $petId1, $petId2, $contestType, $contestId")
 
       // Create db entry for work-in-progress contest
-      context.actorOf(Props[DatabaseActor], "database") ! contestId
+      context.actorOf(Props[DatabaseActor], "database") ! InProgress(contestId)
 
       // Generate futures for requesting pet data from the Pet API
       val List(future1, future2) = List(petId1, petId2)

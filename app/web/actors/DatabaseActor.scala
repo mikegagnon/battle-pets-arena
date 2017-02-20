@@ -19,8 +19,41 @@ import scala.util.{Success, Failure}
 import me.michaelgagnon.pets.web.controllers.ContestRequest
 
 
+//case class MessageInitContest(contestId: UUID)
 
-// TODO: own file
+/**
+ * ContestStatus classes
+ **************************************************************************************************/
+sealed trait ContestStatus {
+  val uuid: UUID
+}
+
+// TODO: rename, relocate?
+case class InProgress(uuid: UUID) extends ContestStatus
+
+case class ContestResult(
+    uuid: UUID,
+    firstPlacePetName: String,
+    secondPlacePetName: String,
+    summary: String) extends ContestStatus
+
+sealed trait ContestError extends ContestStatus {
+  val code: Int
+  val message: String
+}
+
+case class ErrorCouldNotFindPet(uuid: UUID, message: String) {
+  val code = 1
+}
+
+object ErrorServer {
+  val code = 2
+  val message = "Internal server error"
+}
+
+/**
+ * DatabaseActor
+ **************************************************************************************************/
 class DatabaseActor extends Actor {
 
   val log = Logging(context.system, this)
@@ -28,11 +61,13 @@ class DatabaseActor extends Actor {
   // contests(contestId) is left implies the contest failed (e.g. if could not find petId)
   // contests(contestId) is right None implies contest is in process
   // contests(contestId) is right Some contains contest result
-  var contests = MutableMap[UUID, Either[ContestFailure, Option[ContestResult]]]()
+  var contests = MutableMap[UUID, ContestStatus]()
 
   def receive = {
+    case status: ContestStatus => contests(status.uuid) = status
+    case _ => throw new IllegalArgumentException("DatabaseActor received unknown message")
 
-    case InitContestResult(contestId: UUID) => {
+    /*case MessageInitContest(contestId: UUID) => {
       if (contests.contains(contestId)) {
         throw new IllegalArgumentException("Cannot InitContestResult because db already has " +
           contestId.toString)
@@ -47,7 +82,7 @@ class DatabaseActor extends Actor {
     // TODO: document/enforce preconditions
     case StoreContestResult(contestResult) => {
 
-      contests(contestResult.contestId) = Right(Some(contestResult))
+      contests(contestResult.contestId) = contestResult)
 
       log.info(contestResult.contestId.toString,
         contestResult.firstPlacePetName,
@@ -63,8 +98,8 @@ class DatabaseActor extends Actor {
 
       log.info(contestId.toString)
     }
+    */
 
-    case _ => throw new IllegalArgumentException("DatabaseActor received unknown message")
   }
 
 }
