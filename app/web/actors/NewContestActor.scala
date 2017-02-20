@@ -41,14 +41,7 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
     case _ => throw new IllegalArgumentException("NewContestActor received unknown message")
   }
 
-  // TODO: breakup?
-  def handleNewContest(contestWithId: ContestWithId) = {
-      
-    val ContestWithId(ContestRequest(petId1, petId2, contestType), contestId) = contestWithId
-
-    log.info(s"received newContest: $petId1, $petId2, $contestType, $contestId")
-
-    database ! InProgress(contestId)
+  def requestPets(petId1: String, petId2: String) = {
 
     // Generate futures for requesting pet data from the Pet API
     // TODO: Seq?
@@ -64,10 +57,22 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
       }
 
     // Combine the two futures into one
-    val response: Future[(HttpResponse, HttpResponse)] = for {
+    for {
       httpResponse1 <- future1
       httpResponse2 <- future2
     } yield (httpResponse1, httpResponse2)
+  }
+
+  // TODO: breakup?
+  def handleNewContest(contestWithId: ContestWithId) = {
+
+    val ContestWithId(ContestRequest(petId1, petId2, contestType), contestId) = contestWithId
+
+    log.info(s"received newContest: $petId1, $petId2, $contestType, $contestId")
+
+    database ! InProgress(contestId)
+
+    val response: Future[(HttpResponse, HttpResponse)] = requestPets(petId1, petId2)
 
     response.onComplete {
 
@@ -79,6 +84,7 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
 
         def isFailure(resp: HttpResponse) = resp.status.intValue != 200
 
+        // TODO: report failure details
         if (isFailure(resp1) || isFailure(resp2)) {
           database ! ErrorResponseFromPetService(contestId,
             "Received error response from Pet service at " + petApiHost)
