@@ -34,6 +34,7 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
 
   val http = Http(context.system)
 
+  val database = Actors.databaseActor
 
   def receive = {
     case contestWithId: ContestWithId => handleNewContest(contestWithId)
@@ -43,37 +44,38 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
 
   def handleNewContest(contestWithId: ContestWithId) = {
       
-      val ContestWithId(ContestRequest(petId1, petId2, contestType), contestId) = contestWithId
+    val ContestWithId(ContestRequest(petId1, petId2, contestType), contestId) = contestWithId
 
-      log.info(s"received newContest: $petId1, $petId2, $contestType, $contestId")
+    log.info(s"received newContest: $petId1, $petId2, $contestType, $contestId")
 
-      // Create db entry for work-in-progress contest
-      context.actorOf(Props[DatabaseActor], "database") ! InProgress(contestId)
+    database ! InProgress(contestId)
 
-      // Generate futures for requesting pet data from the Pet API
-      val List(future1, future2) = List(petId1, petId2)
-        .map { petId =>
+    // Generate futures for requesting pet data from the Pet API
+    val List(future1, future2) = List(petId1, petId2)
+      .map { petId =>
 
-          val uri = s"$petApiHost/pets/$petId"
+        val uri = s"$petApiHost/pets/$petId"
 
-          val httpRequest = HttpRequest(uri = uri)
-            .withHeaders(RawHeader("X-Pets-Token", petApiToken))
+        val httpRequest = HttpRequest(uri = uri)
+          .withHeaders(RawHeader("X-Pets-Token", petApiToken))
 
-          http.singleRequest(httpRequest)
-        }
-
-      // Combine the two futures into one
-      val response: Future[(HttpResponse, HttpResponse)] = for {
-        httpResponse1 <- future1
-        httpResponse2 <- future2
-      } yield (httpResponse1, httpResponse2)
-
-      response.onComplete {
-        case Success((resp1, resp2)) => println(resp1, resp2)
-        case Failure(t) => println(t)
+        http.singleRequest(httpRequest)
       }
 
-      context.stop(self)
+    // Combine the two futures into one
+    val response: Future[(HttpResponse, HttpResponse)] = for {
+      httpResponse1 <- future1
+      httpResponse2 <- future2
+    } yield (httpResponse1, httpResponse2)
+
+    response.onComplete {
+      case Success((resp1, resp2)) => println(resp1, resp2)
+      case Failure(t) => {
+        database ! ErrorAccessPetService(contestId, "Error accessing Pet service at " + petApiHost)
+      }
+    }
+
+    context.stop(self)
   }
 
 }

@@ -21,13 +21,13 @@ import me.michaelgagnon.pets.web.controllers.ContestRequest
  * ContestStatus classes
  **************************************************************************************************/
 sealed trait ContestStatus {
-  val uuid: UUID
+  val contestId: UUID
 }
 
-case class InProgress(uuid: UUID) extends ContestStatus
+case class InProgress(contestId: UUID) extends ContestStatus
 
 case class ContestResult(
-    uuid: UUID,
+    contestId: UUID,
     firstPlacePetName: String,
     secondPlacePetName: String,
     summary: String) extends ContestStatus
@@ -37,13 +37,17 @@ sealed trait ContestError extends ContestStatus {
   val message: String
 }
 
-case class ErrorCouldNotFindPet(uuid: UUID, message: String) {
+case class ErrorCouldNotFindPet(contestId: UUID, message: String) extends ContestError {
   val code = 1
 }
 
-object ErrorServer {
+case class ErrorServer(contestId: UUID) extends ContestError {
   val code = 2
   val message = "Internal server error"
+} 
+
+case class ErrorAccessPetService(contestId: UUID, message: String) extends ContestError {
+  val code = 3
 }
 
 /**
@@ -56,7 +60,10 @@ class DatabaseActor extends Actor {
   var contests = MutableMap[UUID, ContestStatus]()
 
   def receive = {
-    case status: ContestStatus => contests(status.uuid) = status
+    case status: ContestStatus => {
+      log.info("DatabaseActor received status: " + status)
+      contests(status.contestId) = status
+    }
     case _ => throw new IllegalArgumentException("DatabaseActor received unknown message")
   }
 
