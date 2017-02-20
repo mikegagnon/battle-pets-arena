@@ -24,7 +24,6 @@ sealed trait ContestStatus {
   val uuid: UUID
 }
 
-// TODO: rename, relocate?
 case class InProgress(uuid: UUID) extends ContestStatus
 
 case class ContestResult(
