@@ -64,6 +64,7 @@ class DatabaseActor extends Actor {
       log.info("DatabaseActor received status: " + status)
       contests(status.contestId) = status
     }
+
     case _ => throw new IllegalArgumentException("DatabaseActor received unknown message")
   }
 
