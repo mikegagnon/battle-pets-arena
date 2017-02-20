@@ -12,16 +12,29 @@ import akka.stream.ActorMaterializer
 import akka.stream.ActorMaterializerSettings
 import java.util.UUID
 import play.api.Configuration
+import play.api.libs.json._
 import scala.collection.mutable.{Map => MutableMap}
 import scala.concurrent._
 import scala.util.{Success, Failure}
 
 
+// TODO
+import scala.concurrent.duration._
+
+
 import me.michaelgagnon.pets.web.controllers.ContestRequest
 
-// TODO: own file
+// TODO: relocate?
+case class Pet(
+  id: String,
+  name: String,
+  strength: Int,
+  speed: Int,
+  intelligence: Int,
+  integrity:Int)
+
 // TODO: comment
-//class NewContestActor()(implicit ec: ExecutionContext) extends Actor {
+// TODO: move statics to companion object
 class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) extends Actor {
 
   val log = Logging(context.system, this)
@@ -35,6 +48,8 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
   val http = Http(context.system)
 
   val database = Actors.databaseActor
+
+  implicit val petReads = Json.reads[Pet]
 
   def receive = {
     case contestWithId: ContestWithId => handleNewContest(contestWithId)
@@ -63,6 +78,34 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
     } yield (httpResponse1, httpResponse2)
   }
 
+  // TODO: rename
+  def getPet(httpResponse: HttpResponse, contestId: UUID): Either[ErrorJsonFromPetService, Pet] = {
+    
+    // TODO: move
+    val timeout = 300.millis
+
+    val bs: Future[String] = httpResponse.entity
+      .toStrict(timeout)
+      .map { _.data.utf8String }
+      .map { body: String =>
+        println(body)
+        body
+      }
+    
+    //val s: Future[String] = bs.map(_.utf8String) // if you indeed need a `String
+
+    /*val petResult: JsResult[Pet] = Json.fromJson[Pet](httpResponse.value)
+
+    petResult match {
+      case error: JsError =>
+        Left(ErrorJsonFromPetService(contestId, "Could not parse JSON response from Pet service"))
+
+      case success: JsSuccess[Pet] => Right(success.value)
+    }*/
+
+    Left(ErrorJsonFromPetService(contestId, "Could not parse JSON response from Pet service"))
+  }
+
   def handlePetResponse(
       response: Future[(HttpResponse, HttpResponse)],
       contestId: UUID,
@@ -83,6 +126,12 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
           database ! ErrorResponseFromPetService(contestId,
             "Received error response from Pet service at " + petApiHost)
         } else {
+
+          val pet1: Either[ErrorJsonFromPetService, Pet] = getPet(resp1, contestId)
+          val pet2: Either[ErrorJsonFromPetService, Pet] = getPet(resp2, contestId)
+
+          println(pet1)
+          println(pet2)
 
         }
       }
