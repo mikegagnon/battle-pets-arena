@@ -59,7 +59,7 @@ class ContestController @Inject() extends Controller {
 
           val contestWithId = ContestWithId(contestRequest, contestId)
 
-          val newContestActor = Actors.system.actorOf(Props[NewContestActor])
+          val newContestActor = Actors.system.actorOf(Props(new NewContestActor()))
 
           newContestActor ! contestWithId
 

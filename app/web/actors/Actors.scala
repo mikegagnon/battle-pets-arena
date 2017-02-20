@@ -81,7 +81,8 @@ class DatabaseActor extends Actor {
 
 // TODO: own file
 // TODO: comment
-class NewContestActor(implicit ec: ExecutionContext) extends Actor {
+//class NewContestActor()(implicit ec: ExecutionContext) extends Actor {
+class NewContestActor()(implicit ec: ExecutionContext) extends Actor {
 
   val log = Logging(context.system, this)
 
