@@ -50,6 +50,10 @@ case class ErrorAccessPetService(contestId: UUID, message: String) extends Conte
   val code = 3
 }
 
+case class ErrorResponseFromPetService(contestId: UUID, message: String) extends ContestError {
+  val code = 4
+}
+
 /**
  * DatabaseActor
  **************************************************************************************************/
