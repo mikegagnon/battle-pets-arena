@@ -63,21 +63,15 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
     } yield (httpResponse1, httpResponse2)
   }
 
-  // TODO: breakup?
-  def handleNewContest(contestWithId: ContestWithId) = {
-
-    val ContestWithId(ContestRequest(petId1, petId2, contestType), contestId) = contestWithId
-
-    log.info(s"received newContest: $petId1, $petId2, $contestType, $contestId")
-
-    database ! InProgress(contestId)
-
-    val response: Future[(HttpResponse, HttpResponse)] = requestPets(petId1, petId2)
-
+  def handlePetResponse(
+      response: Future[(HttpResponse, HttpResponse)],
+      contestId: UUID,
+      contestType: String) =
     response.onComplete {
 
       case Failure(t) => {
-        database ! ErrorAccessPetService(contestId, "Error accessing Pet service at " + petApiHost)
+        database ! ErrorAccessPetService(contestId,
+          "Error accessing Pet service at " + petApiHost)
       }
 
       case Success((resp1, resp2)) => {
@@ -92,7 +86,20 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
 
         }
       }
-    }
+  }
+
+  // TODO: breakup?
+  def handleNewContest(contestWithId: ContestWithId) = {
+
+    val ContestWithId(ContestRequest(petId1, petId2, contestType), contestId) = contestWithId
+
+    log.info(s"received newContest: $petId1, $petId2, $contestType, $contestId")
+
+    database ! InProgress(contestId)
+
+    val response: Future[(HttpResponse, HttpResponse)] = requestPets(petId1, petId2)
+    
+    handlePetResponse(response, contestId, contestType)
 
     context.stop(self)
   }
