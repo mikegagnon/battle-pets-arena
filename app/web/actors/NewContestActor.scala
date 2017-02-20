@@ -88,7 +88,6 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
       }
   }
 
-  // TODO: breakup?
   def handleNewContest(contestWithId: ContestWithId) = {
 
     val ContestWithId(ContestRequest(petId1, petId2, contestType), contestId) = contestWithId
