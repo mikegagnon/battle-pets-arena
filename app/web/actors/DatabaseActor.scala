@@ -15,11 +15,7 @@ import scala.collection.mutable.{Map => MutableMap}
 import scala.concurrent._
 import scala.util.{Success, Failure}
 
-
 import me.michaelgagnon.pets.web.controllers.ContestRequest
-
-
-//case class MessageInitContest(contestId: UUID)
 
 /**
  * ContestStatus classes
