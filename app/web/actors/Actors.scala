@@ -15,6 +15,7 @@ import scala.collection.mutable.{Map => MutableMap}
 import scala.concurrent._
 import scala.util.{Success, Failure}
 
+import me.michaelgagnon.pets.web.ContestResultWithId
 import me.michaelgagnon.pets.web.controllers.ContestRequest
 
 // TODO: relocate all these definitions?

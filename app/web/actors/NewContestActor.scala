@@ -23,6 +23,7 @@ import scala.concurrent.duration._
 
 import me.michaelgagnon.pets.contest.Games
 import me.michaelgagnon.pets.web.controllers.ContestRequest
+import me.michaelgagnon.pets.web._
 
 // TODO: relocate?
 case class Pet(

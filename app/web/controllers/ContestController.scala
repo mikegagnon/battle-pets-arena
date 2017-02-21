@@ -24,6 +24,7 @@ import scala.util.{Success, Failure}
 import ExecutionContext.Implicits.global
 
 import me.michaelgagnon.pets.web.actors._
+import me.michaelgagnon.pets.web.ContestStatus
 
 // TODO: rm?
 object GetContestId
