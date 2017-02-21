@@ -120,7 +120,7 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
 
     log.info(s"received newContest: $petId1, $petId2, $contestType, $contestId")
 
-    database ! InProgress(contestId)
+    database ! PostStatus(InProgress(contestId))
 
     val pet1: Future[Either[ContestError, Pet]] = getPet(petId1, contestId)
     val pet2: Future[Either[ContestError, Pet]] = getPet(petId2, contestId)
@@ -134,11 +134,11 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
     println(pets)
 
     pets.onComplete {
-        case Failure(t) => database ! ErrorAccessPetService(contestId, petApiHost)
-        case Success((Left(error), _)) => database ! error
-        case Success((_, Left(error))) => database ! error
+        case Failure(t) => database ! PostStatus(ErrorAccessPetService(contestId, petApiHost))
+        case Success((Left(error), _)) => database ! PostStatus(error)
+        case Success((_, Left(error))) => database ! PostStatus(error)
         case Success((Right(pet1), Right(pet2))) => {
-          database ! runContest(contestId, pet1, pet2, contestType)
+          database ! PostStatus(runContest(contestId, pet1, pet2, contestType))
         }
       }
 

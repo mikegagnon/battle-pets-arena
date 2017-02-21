@@ -99,9 +99,8 @@ case class NoStatus(contestId: UUID) extends ContestError {
 }
 
 
-/**
- * ContestStatus classes. TODO: move error messages?
- **************************************************************************************************/
+case class PostStatus(conestStatus: ContestStatus)
+
 case class RequestStatus(contestId: UUID)
 
 /**
@@ -114,9 +113,9 @@ class DatabaseActor extends Actor {
   var contests = MutableMap[UUID, ContestStatus]()
 
   def receive = {
-    case status: ContestStatus => {
-      log.info("DatabaseActor received status: " + status)
-      contests(status.contestId) = status
+    case PostStatus(contestStatus) => {
+      log.info("DatabaseActor received status: " + contestStatus)
+      contests(contestStatus.contestId) = contestStatus
     }
 
     case RequestStatus(contestId) => {
