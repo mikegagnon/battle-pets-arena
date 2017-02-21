@@ -106,64 +106,9 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
 
   }
 
-  // TODO: rename
-  /*def getPetFuture(httpResponse: Future[HttpResponse], contestId: UUID): Either[ErrorJsonFromPetService, Pet] = {
+  def runContest(contestId: UUID, pet1: Pet, pet2: Pet, contestType: String) {
     
-    // TODO: move
-    val timeout = 300.millis
-
-    val bs: Future[String] = httpResponse.entity
-      .toStrict(timeout)
-      .map { _.data.utf8String }
-      .map { body: String =>
-        println(body)
-        body
-      }
-    
-    //val s: Future[String] = bs.map(_.utf8String) // if you indeed need a `String
-
-    /*val petResult: JsResult[Pet] = Json.fromJson[Pet](httpResponse.value)
-
-    petResult match {
-      case error: JsError =>
-        Left(ErrorJsonFromPetService(contestId, "Could not parse JSON response from Pet service"))
-
-      case success: JsSuccess[Pet] => Right(success.value)
-    }*/
-
-    Left(ErrorJsonFromPetService(contestId, "Could not parse JSON response from Pet service"))
-  }*/
-
-  /*def handlePetResponse(
-      petResponse: Future[(HttpResponse, HttpResponse)],
-      contestId: UUID,
-      contestType: String) =
-    response.onComplete {
-
-      case Failure(t) => {
-        database ! ErrorAccessPetService(contestId,
-          "Error accessing Pet service at " + petApiHost)
-      }
-
-      case Success((resp1, resp2)) => {
-
-        def isFailure(resp: HttpResponse) = resp.status.intValue != 200
-
-        // TODO: report failure details
-        if (isFailure(resp1) || isFailure(resp2)) {
-          database ! ErrorResponseFromPetService(contestId,
-            "Received error response from Pet service at " + petApiHost)
-        } else {
-
-          //val pet1: Either[ErrorJsonFromPetService, Pet] = getPet(resp1, contestId)
-          //val pet2: Either[ErrorJsonFromPetService, Pet] = getPet(resp2, contestId)
-
-          println(pet1)
-          println(pet2)
-
-        }
-      }
-  }*/
+  }
 
   def handleNewContest(contestWithId: ContestWithId) = {
 
@@ -184,14 +129,12 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
     
     println(pets)
 
-    pets
-      .onComplete {
+    pets.onComplete {
         case Failure(t) => database ! ErrorAccessPetService(contestId, petApiHost)
         case Success((Left(error), _)) => database ! error
         case Success((_, Left(error))) => database ! error
         case Success((Right(pet1), Right(pet2))) => {
-          println(pet1)
-          println(pet2)
+          runContest(contestId, pet1, pet2, contestType)
         }
       }
 
