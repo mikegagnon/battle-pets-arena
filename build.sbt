@@ -19,5 +19,7 @@ libraryDependencies += "com.typesafe.akka" % "akka-actor_2.11" % "2.4.17"
 
 libraryDependencies += "com.typesafe.akka" %% "akka-http-core" % "2.4.7"
 
+libraryDependencies += filters
+
 // TODO: comment
 routesGenerator := InjectedRoutesGenerator
