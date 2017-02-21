@@ -19,9 +19,23 @@ import me.michaelgagnon.pets.contest.ContestResult
 import me.michaelgagnon.pets.contest.Games
 import me.michaelgagnon.pets.web.controllers.ContestRequest
 
+import play.api.libs.json._
+
+
 /**
  * ContestStatus classes. TODO: move error messages?
  **************************************************************************************************/
+object ContestStatus {
+
+  implicit val contestStatusWrites = new Writes[ContestStatus] {
+  def writes(contestStatus: ContestStatus) = Json.obj(
+      "contestId" -> contestStatus.contestId.toString
+    )
+  }
+
+  //implicit val contestStatusFormat = Json.format[ContestStatus]
+}
+
 sealed trait ContestStatus {
   val contestId: UUID
 }

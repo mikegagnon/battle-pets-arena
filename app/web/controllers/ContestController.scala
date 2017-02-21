@@ -81,8 +81,13 @@ class ContestController @Inject()(config: Configuration) extends Controller {
         implicit val timeout = Timeout(5 seconds)
         val future = Actors.databaseActor ? RequestStatus(id)
         val result = Await.result(future, timeout.duration).asInstanceOf[ContestStatus]
+
+
+
+        val resultJson = Json.toJson(result)
+
         println(result)
-        Ok(result.toString)
+        Ok(resultJson.toString)
       }
       .getOrElse(BadRequest("Invalid contestId\n"))
   }
