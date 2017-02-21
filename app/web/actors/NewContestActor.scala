@@ -21,7 +21,7 @@ import scala.util.{Success, Failure}
 // TODO
 import scala.concurrent.duration._
 
-
+import me.michaelgagnon.pets.contest.Games
 import me.michaelgagnon.pets.web.controllers.ContestRequest
 
 // TODO: relocate?
@@ -106,9 +106,13 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
 
   }
 
-  def runContest(contestId: UUID, pet1: Pet, pet2: Pet, contestType: String) {
-    
-  }
+  def runContest(contestId: UUID, pet1: Pet, pet2: Pet, contestType: String): ContestStatus = 
+    Games
+      .get(contestType)
+      .map { game =>
+        ContestResultWithId(contestId, game(pet1, pet2))
+      }
+      .getOrElse(ErrorInvalidGame(contestId))
 
   def handleNewContest(contestWithId: ContestWithId) = {
 
@@ -134,7 +138,7 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
         case Success((Left(error), _)) => database ! error
         case Success((_, Left(error))) => database ! error
         case Success((Right(pet1), Right(pet2))) => {
-          runContest(contestId, pet1, pet2, contestType)
+          database ! runContest(contestId, pet1, pet2, contestType)
         }
       }
 

@@ -16,10 +16,11 @@ import scala.concurrent._
 import scala.util.{Success, Failure}
 
 import me.michaelgagnon.pets.contest.ContestResult
+import me.michaelgagnon.pets.contest.Games
 import me.michaelgagnon.pets.web.controllers.ContestRequest
 
 /**
- * ContestStatus classes
+ * ContestStatus classes. TODO: move error messages?
  **************************************************************************************************/
 sealed trait ContestStatus {
   val contestId: UUID
@@ -55,6 +56,13 @@ case class ErrorResponseFromPetService(contestId: UUID, message: String) extends
 case class ErrorJsonFromPetService(contestId: UUID) extends ContestError {
   val code = 5
   val message = "Could not parse json from Pet service"
+}
+
+// TODO: move?
+case class ErrorInvalidGame(contestId: UUID) extends ContestError {
+  val code = 6
+  val message = "Error: you specified an invalid contest. Available contests: " + 
+    Games.keys.mkString(", ")
 }
 
 /**
