@@ -84,9 +84,7 @@ class ContestController @Inject()(config: Configuration) extends Controller {
         println(result)
         Ok(result.toString)
       }
-      .getOrElse(BadRequest("Invalid contestId"))
-
-
+      .getOrElse(BadRequest("Invalid contestId\n"))
   }
 
 }
