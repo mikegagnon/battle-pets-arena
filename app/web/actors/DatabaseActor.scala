@@ -25,30 +25,32 @@ import play.api.libs.json._
 /**
  * ContestStatus classes. TODO: move error messages?
  **************************************************************************************************/
-object ContestStatus {
-
-  implicit val contestStatusWrites = new Writes[ContestStatus] {
-  def writes(contestStatus: ContestStatus) = Json.obj(
-      "contestId" -> contestStatus.contestId.toString
-    )
-  }
-
-  //implicit val contestStatusFormat = Json.format[ContestStatus]
-}
-
 sealed trait ContestStatus {
   val contestId: UUID
+  def toJson: JsValue
 }
 
-case class NoStatus(contestId: UUID) extends ContestStatus
+case class InProgress(contestId: UUID) extends ContestStatus {
+  def toJson: JsValue = JsString("The contest is in progress")
+}
 
-case class InProgress(contestId: UUID) extends ContestStatus
-
-case class ContestResultWithId(contestId: UUID, result: ContestResult) extends ContestStatus
+case class ContestResultWithId(contestId: UUID, result: ContestResult) extends ContestStatus {
+  // TODO: optional summary
+  def toJson: JsValue = JsObject(Seq(
+      "firstPlace" -> JsString(result.firstPlace.name),
+      "secondPlace" -> JsString(result.secondPlace.name),
+      "summary" -> JsString(result.summary.getOrElse(""))
+    ))
+}
 
 sealed trait ContestError extends ContestStatus {
   val code: Int
   val message: String
+
+  def toJson: JsValue = JsObject(Seq(
+      "errorCode" -> JsNumber(code),
+      "message" -> JsString(message)
+    ))
 }
 
 case class ErrorCouldNotFindPet(contestId: UUID, message: String) extends ContestError {
@@ -80,6 +82,12 @@ case class ErrorInvalidGame(contestId: UUID) extends ContestError {
   val message = "Error: you specified an invalid contest. Available contests: " + 
     Games.keys.mkString(", ")
 }
+
+case class NoStatus(contestId: UUID) extends ContestError {
+  val code = 7
+  val message = "Error: the contestId does not match any contests"
+}
+
 
 /**
  * ContestStatus classes. TODO: move error messages?

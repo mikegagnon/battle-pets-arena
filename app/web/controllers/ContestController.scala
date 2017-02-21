@@ -84,10 +84,10 @@ class ContestController @Inject()(config: Configuration) extends Controller {
 
 
 
-        val resultJson = Json.toJson(result)
+        val resultJson = result.toJson.toString
 
-        println(result)
-        Ok(resultJson.toString)
+        println(resultJson)
+        Ok(resultJson)
       }
       .getOrElse(BadRequest("Invalid contestId\n"))
   }
