@@ -184,7 +184,16 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
     
     println(pets)
 
-    //handlePetResponse(response, contestId, contestType)
+    pets
+      .onComplete {
+        case Failure(t) => database ! ErrorAccessPetService(contestId, petApiHost)
+        case Success((Left(error), _)) => database ! error
+        case Success((_, Left(error))) => database ! error
+        case Success((Right(pet1), Right(pet2))) => {
+          println(pet1)
+          println(pet2)
+        }
+      }
 
     context.stop(self)
   }

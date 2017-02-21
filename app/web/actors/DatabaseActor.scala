@@ -46,8 +46,9 @@ case class ErrorServer(contestId: UUID) extends ContestError {
   val message = "Internal server error"
 } 
 
-case class ErrorAccessPetService(contestId: UUID, message: String) extends ContestError {
+case class ErrorAccessPetService(contestId: UUID, petApiHost: String) extends ContestError {
   val code = 3
+  val message = "Error accessing Pet service at " + petApiHost
 }
 
 case class ErrorResponseFromPetService(contestId: UUID, message: String) extends ContestError {
