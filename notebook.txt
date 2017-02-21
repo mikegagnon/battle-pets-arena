@@ -77,3 +77,9 @@ The "summary" key is optional, since some contests might be completely boring.
 - return futures?
 - logging
 
+
+curl -H "X-Pets-Token: $PET_SERVICE_API_TOKEN" https://wunder-pet-api-staging.herokuapp.com/pets
+
+curl -H "Contest-Token: $CONTEST_SERVICE_API_TOKEN" -H "Content-Type: application/json" -X POST -d '{"petId1": "2251ef5c-4abb-4f97-943e-0dc8738b5844", "petId2": "1d4d557b-2470-40cb-b2e4-1bc138914464", "contestType": "very-slow"}' http://localhost:9000/contest
+
+curl -H "Contest-Token: $CONTEST_SERVICE_API_TOKEN"  http://localhost:9000/contest/status/

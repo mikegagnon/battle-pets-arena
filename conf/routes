@@ -2,4 +2,6 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-POST        /contest    me.michaelgagnon.pets.web.controllers.ContestController.contest
+POST        /contest                       me.michaelgagnon.pets.web.controllers.ContestController.contest
+
+GET         /contest/status/:contestId     me.michaelgagnon.pets.web.controllers.ContestController.status(contestId: String)

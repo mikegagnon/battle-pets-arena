@@ -26,6 +26,8 @@ sealed trait ContestStatus {
   val contestId: UUID
 }
 
+case class NoStatus(contestId: UUID) extends ContestStatus
+
 case class InProgress(contestId: UUID) extends ContestStatus
 
 case class ContestResultWithId(contestId: UUID, result: ContestResult) extends ContestStatus
@@ -66,6 +68,11 @@ case class ErrorInvalidGame(contestId: UUID) extends ContestError {
 }
 
 /**
+ * ContestStatus classes. TODO: move error messages?
+ **************************************************************************************************/
+case class RequestStatus(contestId: UUID)
+
+/**
  * DatabaseActor
  **************************************************************************************************/
 class DatabaseActor extends Actor {
@@ -78,6 +85,10 @@ class DatabaseActor extends Actor {
     case status: ContestStatus => {
       log.info("DatabaseActor received status: " + status)
       contests(status.contestId) = status
+    }
+
+    case RequestStatus(contestId) => {
+      sender ! contests.getOrElse(contestId, NoStatus(contestId))
     }
 
     case _ => throw new IllegalArgumentException("DatabaseActor received unknown message")

@@ -4,12 +4,15 @@ package me.michaelgagnon.pets.web.controllers
 import akka.actor.Actor
 import akka.actor.ActorSystem
 import akka.actor.Props
+import scala.concurrent.duration._
 import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers._
+import akka.pattern.ask
 import akka.stream.ActorMaterializer
 import akka.stream.ActorMaterializerSettings
+import akka.util.Timeout
 import java.util.UUID
 import javax.inject._
 import play.api._
@@ -20,7 +23,7 @@ import scala.concurrent._
 import scala.util.{Success, Failure}
 import ExecutionContext.Implicits.global
 
-import me.michaelgagnon.pets.web.actors.{Actors, ContestWithId, NewContestActor}
+import me.michaelgagnon.pets.web.actors._
 
 // TODO: rm?
 object GetContestId
@@ -62,6 +65,28 @@ class ContestController @Inject()(config: Configuration) extends Controller {
           Created(contestId.toString + "\n")
         }
       }
+  }
+
+  def status(contestIdString: String) = Action { request =>
+
+    val contestId: Option[UUID] = try {
+        Some(UUID.fromString(contestIdString))
+      } catch {
+        case e: IllegalArgumentException => None
+      }
+
+    contestId
+      .map { id: UUID =>
+        // TODO: put timeout in configuration
+        implicit val timeout = Timeout(5 seconds)
+        val future = Actors.databaseActor ? RequestStatus(id)
+        val result = Await.result(future, timeout.duration).asInstanceOf[ContestStatus]
+        println(result)
+        Ok(result.toString)
+      }
+      .getOrElse(BadRequest("Invalid contestId"))
+
+
   }
 
 }
