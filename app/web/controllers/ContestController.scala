@@ -67,7 +67,7 @@ class ContestController @Inject()(config: Configuration) extends Controller {
       }
   }
 
-  def status(contestIdString: String) = Action { request =>
+  def result(contestIdString: String) = Action { request =>
 
     val contestId: Option[UUID] = try {
         Some(UUID.fromString(contestIdString))

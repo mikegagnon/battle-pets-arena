@@ -4,4 +4,4 @@
 
 POST        /contest                       me.michaelgagnon.pets.web.controllers.ContestController.contest
 
-GET         /contest/status/:contestId     me.michaelgagnon.pets.web.controllers.ContestController.status(contestId: String)
+GET         /contest/result/:contestId     me.michaelgagnon.pets.web.controllers.ContestController.result(contestId: String)
