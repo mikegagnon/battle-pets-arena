@@ -21,7 +21,7 @@ import me.michaelgagnon.pets.web.controllers.ContestRequest
 // TODO: rename, relocate?
 case class ContestFailure(message: String)
 // TODO: rename? relocate? encapsulate in DatabaseMessage object?
-case class StoreContestResult(contestResult: ContestResult)
+case class StoreContestResult(contestResult: ContestResultWithId)
 case class GetContestResult(contestId: UUID)
 // changename to ContestRequestWithId
 case class ContestWithId(contest: ContestRequest, contestId: UUID)

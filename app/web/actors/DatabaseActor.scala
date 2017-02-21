@@ -15,6 +15,7 @@ import scala.collection.mutable.{Map => MutableMap}
 import scala.concurrent._
 import scala.util.{Success, Failure}
 
+import me.michaelgagnon.pets.contest.ContestResult
 import me.michaelgagnon.pets.web.controllers.ContestRequest
 
 /**
@@ -26,11 +27,7 @@ sealed trait ContestStatus {
 
 case class InProgress(contestId: UUID) extends ContestStatus
 
-case class ContestResult(
-    contestId: UUID,
-    firstPlacePetName: String,
-    secondPlacePetName: String,
-    summary: String) extends ContestStatus
+case class ContestResultWithId(contestId: UUID, result: ContestResult) extends ContestStatus
 
 sealed trait ContestError extends ContestStatus {
   val code: Int
