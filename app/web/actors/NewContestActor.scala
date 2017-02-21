@@ -56,30 +56,58 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
     case _ => throw new IllegalArgumentException("NewContestActor received unknown message")
   }
 
-  def requestPets(petId1: String, petId2: String) = {
 
-    // Generate futures for requesting pet data from the Pet API
-    // TODO: Seq?
-    val List(future1, future2) = List(petId1, petId2)
-      .map { petId =>
+  def petFromJson(json: String, contestId: UUID): Either[ContestError, Pet] = {
 
-        val uri = s"$petApiHost/pets/$petId"
+    implicit val petReads = Json.reads[Pet]
 
-        val httpRequest = HttpRequest(uri = uri)
-          .withHeaders(RawHeader("X-Pets-Token", petApiToken))
+    // parse the request
+    val result: JsResult[Pet] = Json.fromJson[Pet](Json.parse(json))
 
-        http.singleRequest(httpRequest)
+    result match {
+      case error: JsError => Left(ErrorJsonFromPetService(contestId))
+      case success: JsSuccess[Pet] => Right(success.value)
+    }
+
+  }
+
+  def getPet(petId: String, contestId: UUID): Future[Either[ContestError, Pet]] = {
+
+    val uri = s"$petApiHost/pets/$petId"
+
+    val httpRequest = HttpRequest(uri = uri)
+      .withHeaders(RawHeader("X-Pets-Token", petApiToken))
+
+    val httpResponse: Future[HttpResponse]= http.singleRequest(httpRequest)
+
+    // TODO: move?
+    val timeout = 300.millis
+
+    val responseBody: Future[String] =
+      httpResponse
+        .flatMap { response =>
+
+          // This little bit of code grabs the body from http response
+          response
+            .entity
+            .toStrict(timeout)
+            .map { _.data.utf8String }
+
+        }
+
+      
+    responseBody
+      // TODO: _
+      .map { jsonString =>
+        val pet = petFromJson(jsonString, contestId)
+        println(pet)
+        pet
       }
 
-    // Combine the two futures into one
-    for {
-      httpResponse1 <- future1
-      httpResponse2 <- future2
-    } yield (httpResponse1, httpResponse2)
   }
 
   // TODO: rename
-  def getPet(httpResponse: HttpResponse, contestId: UUID): Either[ErrorJsonFromPetService, Pet] = {
+  /*def getPetFuture(httpResponse: Future[HttpResponse], contestId: UUID): Either[ErrorJsonFromPetService, Pet] = {
     
     // TODO: move
     val timeout = 300.millis
@@ -104,10 +132,10 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
     }*/
 
     Left(ErrorJsonFromPetService(contestId, "Could not parse JSON response from Pet service"))
-  }
+  }*/
 
-  def handlePetResponse(
-      response: Future[(HttpResponse, HttpResponse)],
+  /*def handlePetResponse(
+      petResponse: Future[(HttpResponse, HttpResponse)],
       contestId: UUID,
       contestType: String) =
     response.onComplete {
@@ -127,15 +155,15 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
             "Received error response from Pet service at " + petApiHost)
         } else {
 
-          val pet1: Either[ErrorJsonFromPetService, Pet] = getPet(resp1, contestId)
-          val pet2: Either[ErrorJsonFromPetService, Pet] = getPet(resp2, contestId)
+          //val pet1: Either[ErrorJsonFromPetService, Pet] = getPet(resp1, contestId)
+          //val pet2: Either[ErrorJsonFromPetService, Pet] = getPet(resp2, contestId)
 
           println(pet1)
           println(pet2)
 
         }
       }
-  }
+  }*/
 
   def handleNewContest(contestWithId: ContestWithId) = {
 
@@ -145,9 +173,18 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
 
     database ! InProgress(contestId)
 
-    val response: Future[(HttpResponse, HttpResponse)] = requestPets(petId1, petId2)
+    val pet1: Future[Either[ContestError, Pet]] = getPet(petId1, contestId)
+    val pet2: Future[Either[ContestError, Pet]] = getPet(petId2, contestId)
+  
+    // Join the futures
+    val pets: Future[(Either[ContestError, Pet], Either[ContestError, Pet])] = for {
+        p1 <- pet1
+        p2 <- pet2
+      } yield (p1, p2)
     
-    handlePetResponse(response, contestId, contestType)
+    println(pets)
+
+    //handlePetResponse(response, contestId, contestType)
 
     context.stop(self)
   }
