@@ -33,10 +33,6 @@ case class ContestRequest(petId1: String, petId2: String, contestType: String)
 @Singleton
 class ContestController @Inject()(config: Configuration) extends Controller {
 
-/*  val system = ActorSystem("BattlePetsArenaSystem")
-
-  val databaseActor = system.actorOf(Props[DatabaseActor], "database")
-*/
   // Note: The reason we specify parse.tolerantJson is to avoid Play automatically handling
   // the error case where application/json is missing from the header. We want to avoid this case
   // because Play returns an HTML error message, which is inconsistent with our JSON error messages
