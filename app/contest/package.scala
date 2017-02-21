@@ -5,7 +5,8 @@ package me.michaelgagnon.pets
 package object contest {
   
   val Games = Map(
-    "wits" -> Wits,
-    "muscle" -> Muscle
+    "muscle" -> Muscle,
+    "slow" -> Slow,
+    "wits" -> Wits
     )
 }
