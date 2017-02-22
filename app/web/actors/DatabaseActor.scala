@@ -13,13 +13,10 @@ case class RequestStatus(contestId: UUID)
 
 class DatabaseActor extends Actor {
 
-  val log = Logging(context.system, this)
-
   var contests = MutableMap[UUID, ContestStatus]()
 
   def receive = {
     case PostStatus(contestStatus) => {
-      log.info("DatabaseActor received status: " + contestStatus)
       contests(contestStatus.contestId) = contestStatus
     }
 
