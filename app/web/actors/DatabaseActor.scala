@@ -1,6 +1,5 @@
 package me.michaelgagnon.pets.web.actors
 
-// TODO clean
 import akka.actor.Actor
 import akka.actor.ActorSystem
 import akka.actor.Props
@@ -22,16 +21,10 @@ import me.michaelgagnon.pets.web.{ContestStatus, NoStatus}
 
 import play.api.libs.json._
 
-
-
-// TODO: comment
 case class PostStatus(conestStatus: ContestStatus)
 
 case class RequestStatus(contestId: UUID)
 
-/**
- * DatabaseActor
- **************************************************************************************************/
 class DatabaseActor extends Actor {
 
   val log = Logging(context.system, this)

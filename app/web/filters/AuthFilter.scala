@@ -10,9 +10,7 @@ import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-// TODO: investigate
 object AuthFilter {
-  // if you put this here there is ever only 1 instance instead of 1/class.
   val CONTEST_TOKEN = "Contest-Token"
 }
 

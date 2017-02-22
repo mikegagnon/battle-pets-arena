@@ -1,6 +1,5 @@
 package me.michaelgagnon.pets.web.actors
 
-// TODO clean
 import akka.actor.Actor
 import akka.actor.ActorSystem
 import akka.actor.Props
@@ -15,17 +14,13 @@ import play.api.Configuration
 import play.api.libs.json._
 import scala.collection.mutable.{Map => MutableMap}
 import scala.concurrent._
-import scala.util.{Success, Failure}
-
-
-// TODO
 import scala.concurrent.duration._
+import scala.util.{Success, Failure}
 
 import me.michaelgagnon.pets.contest.Games
 import me.michaelgagnon.pets.web.controllers.ContestRequest
 import me.michaelgagnon.pets.web._
 
-// TODO: relocate?
 case class Pet(
   id: String,
   name: String,
@@ -34,8 +29,6 @@ case class Pet(
   intelligence: Int,
   integrity:Int)
 
-// TODO: comment
-// TODO: move statics to companion object
 class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) extends Actor {
 
   val log = Logging(context.system, this)
@@ -56,7 +49,6 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
     case contestWithId: ContestWithId => handleNewContest(contestWithId)
     case _ => throw new IllegalArgumentException("NewContestActor received unknown message")
   }
-
 
   def petFromJson(json: String, contestId: UUID): Either[ContestError, Pet] = {
 
@@ -81,7 +73,6 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
 
     val httpResponse: Future[HttpResponse]= http.singleRequest(httpRequest)
 
-    // TODO: move?
     val timeout = 300.millis
 
     val responseBody: Future[String] =
@@ -96,9 +87,7 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
 
         }
 
-      
     responseBody
-      // TODO: _
       .map { jsonString =>
         val pet = petFromJson(jsonString, contestId)
         println(pet)

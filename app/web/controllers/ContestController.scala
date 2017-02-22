@@ -1,6 +1,5 @@
 package me.michaelgagnon.pets.web.controllers
 
-// TODO: Clean
 import akka.actor.Actor
 import akka.actor.ActorSystem
 import akka.actor.Props
@@ -26,13 +25,7 @@ import ExecutionContext.Implicits.global
 import me.michaelgagnon.pets.web.actors._
 import me.michaelgagnon.pets.web.ContestStatus
 
-// TODO: rm?
-object GetContestId
-
-// TODO: where should this case class go
-// TODO: organize
 case class ContestRequest(petId1: String, petId2: String, contestType: String)
-
 
 @Singleton
 class ContestController @Inject()(config: Configuration) extends Controller {

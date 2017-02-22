@@ -6,10 +6,12 @@ import play.api.libs.json._
 import me.michaelgagnon.pets.contest.ContestResult
 import me.michaelgagnon.pets.contest.Games
 
+// Each class represents the status of a contest. i.e. if the contest in progress? Has it completed?
+// Was there an error?
+//
+// The ContestsStatus objects are stored in the database, then when a result is requested, the
+// the object is converted to JSON and returned.
 
-/**
- * ContestStatus classes. TODO: move error messages?
- **************************************************************************************************/
 sealed trait ContestStatus {
   val contestId: UUID
   val message: String
@@ -67,7 +69,6 @@ case class ErrorJsonFromPetService(contestId: UUID) extends ContestError {
   val message = "Could not parse json from Pet service"
 }
 
-// TODO: move?
 case class ErrorInvalidGame(contestId: UUID) extends ContestError {
   val code = -5
   val message = "Error: you specified an invalid contest. Available contests: " + 

@@ -1,6 +1,5 @@
 package me.michaelgagnon.pets.web.actors
 
-// TODO clean
 import akka.actor.Actor
 import akka.actor.ActorSystem
 import akka.actor.Props
@@ -18,13 +17,6 @@ import scala.util.{Success, Failure}
 import me.michaelgagnon.pets.web.ContestResultWithId
 import me.michaelgagnon.pets.web.controllers.ContestRequest
 
-// TODO: relocate all these definitions?
-// TODO: rename, relocate?
-case class ContestFailure(message: String)
-// TODO: rename? relocate? encapsulate in DatabaseMessage object?
-case class StoreContestResult(contestResult: ContestResultWithId)
-case class GetContestResult(contestId: UUID)
-// changename to ContestRequestWithId
 case class ContestWithId(contest: ContestRequest, contestId: UUID)
 
 object Actors {
