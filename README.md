@@ -145,3 +145,7 @@ sbt run
 python test.py
 ```
 
+## Areas for improvement
+
+- Scala tests with mock Pet API
+- Return better response status codes for errors 
