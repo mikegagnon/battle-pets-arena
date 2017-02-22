@@ -1,8 +1,6 @@
 package me.michaelgagnon.pets.web.actors
 
 import akka.actor.Actor
-//import akka.actor.ActorSystem
-//import akka.actor.Props
 import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
@@ -12,7 +10,6 @@ import akka.stream.ActorMaterializerSettings
 import java.util.UUID
 import play.api.Configuration
 import play.api.libs.json._
-//import scala.collection.mutable.{Map => MutableMap}
 import scala.concurrent._
 import scala.concurrent.duration._
 import scala.util.{Success, Failure}
