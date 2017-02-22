@@ -1,7 +1,5 @@
 package me.michaelgagnon.pets.web.controllers
 
-//import akka.actor.Actor
-//import akka.actor.ActorSystem
 import akka.actor.Props
 import scala.concurrent.duration._
 import akka.pattern.ask
