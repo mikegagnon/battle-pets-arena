@@ -4,22 +4,14 @@ package me.michaelgagnon.pets.web.controllers
 //import akka.actor.ActorSystem
 import akka.actor.Props
 import scala.concurrent.duration._
-//import akka.event.Logging
-//import akka.http.scaladsl.Http
-import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.headers._
 import akka.pattern.ask
-//import akka.stream.ActorMaterializer
-//import akka.stream.ActorMaterializerSettings
 import akka.util.Timeout
 import java.util.UUID
 import javax.inject._
 import play.api._
 import play.api.libs.json._
 import play.api.mvc._
-//import scala.collection.mutable.{Map => MutableMap}
 import scala.concurrent._
-//import scala.util.{Success, Failure}
 import ExecutionContext.Implicits.global
 
 import me.michaelgagnon.pets.web.actors._
