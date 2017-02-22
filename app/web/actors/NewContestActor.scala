@@ -40,6 +40,8 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
   val petApiToken = config.getString("pet.api.token").get
   val petApiHost = config.getString("pet.api.host").get
 
+  val timeout = config.getString("me.michaelgagnon.pets.reqTimeout").get.toInt.seconds
+
   val log = Logging(context.system, this)
 
   final implicit val materializer: ActorMaterializer =
@@ -71,9 +73,6 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
       .withHeaders(RawHeader("X-Pets-Token", petApiToken))
 
     val httpResponse: Future[HttpResponse]= http.singleRequest(httpRequest)
-
-    // TODO
-    val timeout = 300.millis
 
     val body: Future[String] = httpResponse
       .flatMap { response =>

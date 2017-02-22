@@ -26,6 +26,8 @@ class ContestController @Inject()(config: Configuration) extends Controller {
 
   import ContestController._
 
+  val timeout = config.getString("me.michaelgagnon.pets.reqTimeout").get.toInt.seconds
+
   // Note: The reason we specify parse.tolerantJson is to avoid Play automatically handling
   // the error case where application/json is missing from the header. We want to avoid this case
   // because Play returns an HTML error message, which is inconsistent with our JSON error messages
@@ -62,10 +64,9 @@ class ContestController @Inject()(config: Configuration) extends Controller {
 
     contestId
       .map { id: UUID =>
-        // TODO: put timeout in configuration
-        implicit val timeout = Timeout(5 seconds)
+        implicit val awaitTimeout = Timeout(timeout)
         val future = Actors.databaseActor ? RequestStatus(id)
-        val result = Await.result(future, timeout.duration).asInstanceOf[ContestStatus]
+        val result = Await.result(future, awaitTimeout.duration).asInstanceOf[ContestStatus]
         val resultJson = result.toJson.toString
         Ok(resultJson)
       }
