@@ -1,7 +1,6 @@
 package me.michaelgagnon.pets.web.controllers
 
 import akka.actor.Props
-import scala.concurrent.duration._
 import akka.pattern.ask
 import akka.util.Timeout
 import java.util.UUID
@@ -10,6 +9,7 @@ import play.api._
 import play.api.libs.json._
 import play.api.mvc._
 import scala.concurrent._
+import scala.concurrent.duration._
 import ExecutionContext.Implicits.global
 
 import me.michaelgagnon.pets.web.actors._
