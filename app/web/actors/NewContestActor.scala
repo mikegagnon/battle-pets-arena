@@ -25,7 +25,16 @@ case class Pet(
   intelligence: Int,
   integrity:Int)
 
+object NewContestActor {
+
+  val database = Actors.databaseActor
+
+  implicit val petReads = Json.reads[Pet]
+}
+
 class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) extends Actor {
+
+  import NewContestActor._
 
   val petApiToken = config.getString("pet.api.token").get
   val petApiHost = config.getString("pet.api.host").get
@@ -35,10 +44,6 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
 
   val http = Http(context.system)
 
-  val database = Actors.databaseActor
-
-  implicit val petReads = Json.reads[Pet]
-
   def receive = {
     case contestWithId: ContestWithId => handleNewContest(contestWithId)
     case _ => throw new IllegalArgumentException("NewContestActor received unknown message")
@@ -46,9 +51,6 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
 
   def petFromJson(json: String, contestId: UUID): Either[ContestError, Pet] = {
 
-    implicit val petReads = Json.reads[Pet]
-
-    // parse the request
     val result: JsResult[Pet] = Json.fromJson[Pet](Json.parse(json))
 
     result match {
@@ -67,25 +69,21 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
 
     val httpResponse: Future[HttpResponse]= http.singleRequest(httpRequest)
 
+    // TODO
     val timeout = 300.millis
 
-    val responseBody: Future[String] =
-      httpResponse
-        .flatMap { response =>
+    httpResponse
+      .flatMap { response =>
 
-          // This little bit of code grabs the body from http response
-          response
-            .entity
-            .toStrict(timeout)
-            .map { _.data.utf8String }
+        // This little bit of code grabs the body from http response, then maps it to
+        // petFromJson(...)
+        response
+          .entity
+          .toStrict(timeout)
+          .map { _.data.utf8String }
+          // TODO _
+          .map { jsonString => petFromJson(jsonString, contestId)}
 
-        }
-
-    responseBody
-      .map { jsonString =>
-        val pet = petFromJson(jsonString, contestId)
-        println(pet)
-        pet
       }
 
   }
