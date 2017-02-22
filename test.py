@@ -43,7 +43,7 @@ assert result["result"]["secondPlace"] == "Max"
 
 # A successful slow contest
 contestId = createContest("slow")
-#result = waitForResult(contestId)
+result = waitForResult(contestId)
 assert result["code"] == 2
 assert result["result"]["firstPlace"] == "Fluffy"
 assert result["result"]["secondPlace"] == "Max"
