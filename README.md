@@ -128,3 +128,20 @@ If `code` is negative, that indicates an error.
   "message": "Error: the contestId does not match any contests"
 }
 ```
+
+## Environment variable
+
+`CONTEST_SERVICE_API_TOKEN`
+
+## Run server
+
+```
+sbt run
+```
+
+## Run tests
+
+```
+python test.py
+```
+
