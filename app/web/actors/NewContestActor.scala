@@ -1,6 +1,7 @@
 package me.michaelgagnon.pets.web.actors
 
 import akka.actor.Actor
+import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers._
@@ -38,6 +39,8 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
 
   val petApiToken = config.getString("pet.api.token").get
   val petApiHost = config.getString("pet.api.host").get
+
+  val log = Logging(context.system, this)
 
   final implicit val materializer: ActorMaterializer =
     ActorMaterializer(ActorMaterializerSettings(context.system))
@@ -93,6 +96,8 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
       .getOrElse(ErrorInvalidGame(contestId))
 
   def handleNewContest(contestWithId: ContestWithId) = {
+
+    log.info("New contest: " + contestWithId)
 
     val ContestWithId(ContestRequest(petId1, petId2, contestType), contestId) = contestWithId
 
