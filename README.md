@@ -147,5 +147,6 @@ python test.py
 
 ## Areas for improvement
 
+- Use a real database. As is, the database is kept in memory in a `Map` object. Consequently, all contests are lost whenever the server shuts down. On the upside, it would be relatively easy to add a database my simply modifying the implementation of the DatabaseActor
 - Scala tests with mock Pet API
 - Return better response status codes for errors 
