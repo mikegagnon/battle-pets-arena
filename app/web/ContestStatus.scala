@@ -62,23 +62,19 @@ case class ErrorAccessPetService(contestId: UUID, petApiHost: String) extends Co
   val message = "Error accessing Pet service at " + petApiHost
 }
 
-case class ErrorResponseFromPetService(contestId: UUID, message: String) extends ContestError {
-  val code = -4
-}
-
 case class ErrorJsonFromPetService(contestId: UUID) extends ContestError {
-  val code = -5
+  val code = -4
   val message = "Could not parse json from Pet service"
 }
 
 // TODO: move?
 case class ErrorInvalidGame(contestId: UUID) extends ContestError {
-  val code = -6
+  val code = -5
   val message = "Error: you specified an invalid contest. Available contests: " + 
     Games.keys.mkString(", ")
 }
 
 case class NoStatus(contestId: UUID) extends ContestError {
-  val code = -7
+  val code = -6
   val message = "Error: the contestId does not match any contests"
 }

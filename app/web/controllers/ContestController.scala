@@ -63,7 +63,7 @@ class ContestController @Inject()(config: Configuration) extends Controller {
 
           newContestActor ! contestWithId
 
-          Created(contestId.toString + "\n")
+          Created("\"" +contestId.toString + "\"")
         }
       }
   }
@@ -82,15 +82,12 @@ class ContestController @Inject()(config: Configuration) extends Controller {
         implicit val timeout = Timeout(5 seconds)
         val future = Actors.databaseActor ? RequestStatus(id)
         val result = Await.result(future, timeout.duration).asInstanceOf[ContestStatus]
-
-
-
         val resultJson = result.toJson.toString
 
         println(resultJson)
         Ok(resultJson)
       }
-      .getOrElse(BadRequest("Invalid contestId\n"))
+      .getOrElse(BadRequest("\"Invalid contestId\""))
   }
 
 }
