@@ -72,7 +72,7 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
     // TODO
     val timeout = 300.millis
 
-    httpResponse
+    val body: Future[String] = httpResponse
       .flatMap { response =>
 
         // This little bit of code grabs the body from http response, then maps it to
@@ -81,10 +81,9 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
           .entity
           .toStrict(timeout)
           .map { _.data.utf8String }
-          // TODO _
-          .map { jsonString => petFromJson(jsonString, contestId)}
-
       }
+
+    body.map { petFromJson(_, contestId) }
 
   }
 
