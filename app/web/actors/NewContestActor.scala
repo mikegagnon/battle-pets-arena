@@ -1,7 +1,6 @@
 package me.michaelgagnon.pets.web.actors
 
 import akka.actor.Actor
-import akka.event.Logging
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers._
@@ -27,8 +26,6 @@ case class Pet(
   integrity:Int)
 
 class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) extends Actor {
-
-  val log = Logging(context.system, this)
 
   val petApiToken = config.getString("pet.api.token").get
   val petApiHost = config.getString("pet.api.host").get
@@ -104,8 +101,6 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
   def handleNewContest(contestWithId: ContestWithId) = {
 
     val ContestWithId(ContestRequest(petId1, petId2, contestType), contestId) = contestWithId
-
-    log.info(s"received newContest: $petId1, $petId2, $contestType, $contestId")
 
     database ! PostStatus(InProgress(contestId))
 
