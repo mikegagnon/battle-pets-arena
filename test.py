@@ -43,7 +43,7 @@ assert result["result"]["secondPlace"] == "Max"
 
 # A successful slow contest
 contestId = createContest("slow")
-result = waitForResult(contestId)
+#result = waitForResult(contestId)
 assert result["code"] == 2
 assert result["result"]["firstPlace"] == "Fluffy"
 assert result["result"]["secondPlace"] == "Max"
@@ -66,3 +66,6 @@ assert result == "Invalid contestId"
 result = getResult("caf8c135-91c8-44ae-a34b-f8a612de547f")
 assert result["code"] == -6
 
+# Missing security token
+r = requests.get('http://localhost:9000/contest/result/foo')
+assert r.status_code == 401
