@@ -90,9 +90,7 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
   def runContest(contestId: UUID, pet1: Pet, pet2: Pet, contestType: String): ContestStatus = 
     Games
       .get(contestType)
-      .map { game =>
-        ContestResultWithId(contestId, game(pet1, pet2))
-      }
+      .map { game => ContestResultWithId(contestId, game(pet1, pet2)) }
       .getOrElse(ErrorInvalidGame(contestId))
 
   def handleNewContest(contestWithId: ContestWithId) = {
