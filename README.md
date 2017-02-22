@@ -60,7 +60,7 @@ Or:
 ```
 
 `result` is optional and is only included if the contest has completed.
-Within `result`, `summary` is optional, and summaries the most exciting event(s) in the contest.
+Within `result`, `summary` is optional, and summarizes the most exciting event(s) in the contest.
 
 If `code` is positive, that indicates a non-error.
 
