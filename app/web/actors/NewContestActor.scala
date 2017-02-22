@@ -75,8 +75,7 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
     val body: Future[String] = httpResponse
       .flatMap { response =>
 
-        // This little bit of code grabs the body from http response, then maps it to
-        // petFromJson(...)
+        // Grab the body future from http response
         response
           .entity
           .toStrict(timeout)
