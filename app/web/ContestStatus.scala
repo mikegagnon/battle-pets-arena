@@ -6,8 +6,8 @@ import play.api.libs.json._
 import me.michaelgagnon.pets.contest.ContestResult
 import me.michaelgagnon.pets.contest.Games
 
-// Each class represents the status of a contest. i.e. if the contest in progress? Has it completed?
-// Was there an error?
+// Each ContestStatus class represents the status of a contest. e.g. is the contest in progress?
+// Has it completed? Was there an error?
 //
 // The ContestsStatus objects are stored in the database, then when a result is requested, the
 // the object is converted to JSON and returned.
