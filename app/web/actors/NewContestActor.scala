@@ -107,8 +107,6 @@ class NewContestActor(config: Configuration)(implicit ec: ExecutionContext) exte
         p2 <- pet2
       } yield (p1, p2)
     
-    println(pets)
-
     pets.onComplete {
         case Failure(t) => database ! PostStatus(ErrorAccessPetService(contestId, petApiHost))
         case Success((Left(error), _)) => database ! PostStatus(error)
