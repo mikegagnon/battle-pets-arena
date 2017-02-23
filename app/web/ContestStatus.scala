@@ -50,8 +50,9 @@ case class ContestResultWithId(contestId: UUID, result: ContestResult) extends C
 
 sealed trait ContestError extends ContestStatus
 
-case class ErrorCouldNotFindPet(contestId: UUID, message: String) extends ContestError {
+case class ErrorCouldNotFindPet(contestId: UUID) extends ContestError {
   val code = -1
+  val message = "Could not find pet"
 }
 
 case class ErrorServer(contestId: UUID) extends ContestError {
